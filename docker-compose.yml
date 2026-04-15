@@ -1,0 +1,78 @@
+services:
+  edi_system:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: EDI_System
+    working_dir: /var/www/app
+    volumes:
+      - ./app:/var/www/app
+      - ./docker/php/conf.d/app.ini:/usr/local/etc/php/conf.d/99-app.ini:ro
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: "1"
+      DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@edi_mysql:3306/${MYSQL_DATABASE}?serverVersion=8.4.0&charset=utf8mb4"
+    depends_on:
+      edi_mysql:
+        condition: service_healthy
+    networks:
+      - edi_network
+
+  edi_nginx:
+    image: nginx:1.27.5-alpine
+    container_name: EDI_Nginx
+    ports:
+      - "${NGINX_PORT:-8080}:80"
+    volumes:
+      - ./app:/var/www/app:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - edi_system
+    networks:
+      - edi_network
+
+  edi_mysql:
+    image: mysql:8.4
+    container_name: EDI_MySQL
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - edi_network
+
+  edi_phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: EDI_phpMyAdmin
+    ports:
+      - "${PHPMYADMIN_PORT:-8081}:80"
+    environment:
+      PMA_HOST: edi_mysql
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
+      UPLOAD_LIMIT: 128M
+    depends_on:
+      edi_mysql:
+        condition: service_healthy
+    networks:
+      - edi_network
+
+volumes:
+  mysql_data:
+
+networks:
+  edi_network:
+    driver: bridge

@@ -1,0 +1,6 @@
+.git
+.gitignore
+README.md
+app/var/*
+app/vendor
+app/node_modules
