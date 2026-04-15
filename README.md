@@ -11,6 +11,8 @@ This repository contains a Docker-based development environment for the EDI syst
 
 ## Start the environment
 
+Create a local root `.env` from `.env.example` and set your own database passwords before starting the stack.
+
 ```bash
 docker compose up --build -d
 ```
