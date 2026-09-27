@@ -1,13 +1,13 @@
-# EDI Docker Environment
+# Docker Environment
 
-This repository contains a Docker-based development environment for the EDI system.
+This repository contains a Docker-based development environment for the PHP MySql system development.
 
 ## Services
 
-- `EDI_System`: Symfony application runtime on PHP 8.5 with PHP-FPM
-- `EDI_Nginx`: Nginx web server for the Symfony `public/` directory
-- `EDI_MySQL`: MySQL 8.4 database server
-- `EDI_phpMyAdmin`: phpMyAdmin UI for database administration
+- `system_environment`: Symfony application runtime on PHP 8.5 with PHP-FPM
+- `nginx_environment`: Nginx web server for the Symfony `public/` directory
+- `mysql_environment`: MySQL 8.4 database server
+- `phpmyadmin_environment`: phpMyAdmin UI for database administration
 
 ## Start the environment
 
@@ -28,14 +28,14 @@ docker compose up --build -d
 The Docker environment provides PHP-FPM, Nginx, MySQL, and phpMyAdmin. Install Symfony explicitly inside the PHP container after the stack is up:
 
 ```bash
-docker compose exec edi_system composer create-project symfony/skeleton:^8.0 .
-docker compose exec edi_system composer require webapp
+docker compose exec system_environment composer create-project symfony/skeleton:^8.0 .
+docker compose exec system_environment composer require webapp
 ```
 
 If `app/` already contains a Symfony project, use:
 
 ```bash
-docker compose exec edi_system composer install
+docker compose exec system_environment composer install
 ```
 
 If port `3306` is already used on your machine, the project maps MySQL to host port `3307` by default via `.env`.
