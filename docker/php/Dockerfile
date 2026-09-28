@@ -16,5 +16,7 @@ RUN set -eux; docker-php-ext-install -j"$(nproc)" pdo_mysql
 RUN set -eux; docker-php-ext-install -j"$(nproc)" zip
 RUN set -eux; docker-php-ext-install -j"$(nproc)" intl
 
+RUN git config --system --add safe.directory /var/www/app
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/app
