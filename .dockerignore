@@ -1,6 +1,10 @@
 .git
 .gitignore
 README.md
+app/
+/.env
+/.env.*
+!/.env.example
 app/var/*
 app/vendor
 app/node_modules

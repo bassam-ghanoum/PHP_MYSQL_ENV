@@ -23,19 +23,21 @@ docker compose up --build -d
 - phpMyAdmin: `http://localhost:8081`
 - MySQL from host tools: `127.0.0.1:3307`
 
+All published ports bind to `127.0.0.1` and are intended for local development. The Symfony runtime defaults to `APP_ENV=dev` with `APP_DEBUG=0`; set `APP_ENV=prod` and keep `APP_DEBUG=0` for production-mode application behavior. This Compose setup is not a complete production deployment; do not expose the database or phpMyAdmin publicly.
+
 ## Prepare Symfony 8
 
 The Docker environment provides PHP-FPM, Nginx, MySQL, and phpMyAdmin. Install Symfony explicitly inside the PHP container after the stack is up:
 
 ```bash
-docker compose exec system_environment composer create-project symfony/skeleton:^8.0 .
-docker compose exec system_environment composer require webapp
+docker exec system_environment composer create-project symfony/skeleton:^8.0 .
+docker exec system_environment composer require webapp
 ```
 
 If `app/` already contains a Symfony project, use:
 
 ```bash
-docker compose exec system_environment composer install
+docker exec system_environment composer install
 ```
 
 If port `3306` is already used on your machine, the project maps MySQL to host port `3307` by default via `.env`.
