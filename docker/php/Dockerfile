@@ -1,4 +1,4 @@
-FROM php:8.5-fpm-bookworm
+FROM php:php:8.5.12-fpm-bookworm
 
 RUN set -eux; \
     apt-get update; \
